@@ -1,0 +1,6 @@
+@LeagueSim.Api_HostAddress = http://localhost:5296
+
+GET {{LeagueSim.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

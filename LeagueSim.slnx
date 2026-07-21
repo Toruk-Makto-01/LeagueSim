@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="LeagueSim.Api/LeagueSim.Api.csproj" />
+  <Project Path="LeagueSim.Web/LeagueSim.Web.csproj" />
+</Solution>
