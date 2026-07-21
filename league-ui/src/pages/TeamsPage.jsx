@@ -5,7 +5,8 @@ export default function TeamsPage() {
   const [name, setName] = useState('');
   const [foundationYear, setFoundationYear] = useState('');
   const [colors, setColors] = useState('');
-  const [logo, setLogo] = useState('');
+  const [strength, setStrength] = useState(50);
+  const [logoFile, setLogoFile] = useState(null);
 
   const [editingTeam, setEditingTeam] = useState(null);
 
@@ -24,6 +25,18 @@ export default function TeamsPage() {
     e.preventDefault();
 
     const trimmedName = name.trim();
+    const yearNum = parseInt(foundationYear);
+    const strengthNum = parseInt(strength);
+
+    if (isNaN(yearNum) || foundationYear.length !== 4 || yearNum < 1800 || yearNum > 2026) {
+      alert("⚠️ Lütfen geçerli 4 haneli bir kuruluş yılı girin (Örn: 1905).");
+      return;
+    }
+
+    if (isNaN(strengthNum) || strengthNum < 1 || strengthNum > 100) {
+      alert("⚠️ Takım gücü 1 ile 100 arasında olmalıdır!");
+      return;
+    }
 
     const nameExists = teams.some(
       t => t.name.toLowerCase() === trimmedName.toLowerCase() && (!editingTeam || t.id !== editingTeam.id)
@@ -34,56 +47,43 @@ export default function TeamsPage() {
       return;
     }
 
-    if (editingTeam) {
-      fetch(`https://localhost:7230/api/Team/${editingTeam.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: editingTeam.id,
-          name: trimmedName,
-          foundationYear: parseInt(foundationYear),
-          colors,
-          logo
-        })
-      })
-        .then(res => {
-          if (res.ok) {
-            resetForm();
-            fetchTeams();
-          } else {
-            alert('Takım güncellenirken hata oluştu.');
-          }
-        })
-        .catch(err => console.error("Hata:", err));
-    } else {
-      fetch('https://localhost:7230/api/Team', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: trimmedName,
-          foundationYear: parseInt(foundationYear),
-          colors,
-          logo
-        })
-      })
-        .then(res => {
-          if (res.ok) {
-            resetForm();
-            fetchTeams();
-          } else {
-            alert('Takım eklenirken hata oluştu.');
-          }
-        })
-        .catch(err => console.error("Hata:", err));
+    const formData = new FormData();
+    formData.append('name', trimmedName);
+    formData.append('foundationYear', yearNum);
+    formData.append('colors', colors);
+    formData.append('strength', strengthNum);
+    if (logoFile) {
+      formData.append('logoFile', logoFile);
     }
+
+    const url = editingTeam 
+      ? `https://localhost:7230/api/Team/${editingTeam.id}` 
+      : 'https://localhost:7230/api/Team';
+    
+    const method = editingTeam ? 'PUT' : 'POST';
+
+    fetch(url, {
+      method: method,
+      body: formData
+    })
+      .then(res => {
+        if (res.ok) {
+          resetForm();
+          fetchTeams();
+        } else {
+          alert('İşlem sırasında sunucu hatası oluştu.');
+        }
+      })
+      .catch(err => console.error("Hata:", err));
   };
 
   const handleEditClick = (team) => {
     setEditingTeam(team);
     setName(team.name);
-    setFoundationYear(team.foundationYear);
+    setFoundationYear(team.foundationYear.toString());
     setColors(team.colors);
-    setLogo(team.logo || '');
+    setStrength(team.strength || 50);
+    setLogoFile(null);
   };
 
   const resetForm = () => {
@@ -91,7 +91,8 @@ export default function TeamsPage() {
     setName('');
     setFoundationYear('');
     setColors('');
-    setLogo('');
+    setStrength(50);
+    setLogoFile(null);
   };
 
   const handleDeleteTeam = (id) => {
@@ -131,7 +132,7 @@ export default function TeamsPage() {
         )}
       </div>
 
-      <form onSubmit={handleAddOrUpdateTeam} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-10 grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+      <form onSubmit={handleAddOrUpdateTeam} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-10 grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
         <div>
           <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Takım Adı</label>
           <input 
@@ -166,23 +167,35 @@ export default function TeamsPage() {
           />
         </div>
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Logo URL</label>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Güç (1 - 100)</label>
           <input 
-            type="text" 
-            placeholder="Görsel linki..." 
-            value={logo}
-            onChange={(e) => setLogo(e.target.value)}
+            type="number" 
+            min="1"
+            max="100"
+            placeholder="75" 
+            value={strength}
+            onChange={(e) => setStrength(e.target.value)}
             className="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 transition"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Logo Dosyası</label>
+          <input 
+            type="file" 
+            accept="image/*"
+            onChange={(e) => setLogoFile(e.target.files[0])}
+            className="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition"
           />
         </div>
         <div className="flex gap-2">
           <button 
             type="submit" 
-            className={`flex-1 font-bold px-5 py-2.5 rounded-xl transition text-sm shadow-md ${
+            className={`flex-1 font-bold px-4 py-2.5 rounded-xl transition text-sm shadow-md ${
               editingTeam ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'
             }`}
           >
-            {editingTeam ? 'Güncelle' : '+ Takım Ekle'}
+            {editingTeam ? 'Güncelle' : '+ Ekle'}
           </button>
           {editingTeam && (
             <button 
@@ -207,8 +220,15 @@ export default function TeamsPage() {
             <div key={team.id} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition flex items-center justify-between group">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
-                  {team.logo ? (
-                    <img src={team.logo} alt={team.name} className="w-full h-full object-cover" onError={(e)=>{e.target.style.display='none'}} />
+                  {team.logo && team.logo.trim() !== "" ? (
+                    <img 
+                      src={`https://localhost:7230${team.logo}`} 
+                      alt={team.name} 
+                      className="w-full h-full object-cover" 
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }} 
+                    />
                   ) : (
                     <span className="text-xl font-extrabold text-slate-400">{team.name.charAt(0)}</span>
                   )}
@@ -218,8 +238,9 @@ export default function TeamsPage() {
                   <h3 className="font-bold text-slate-800 text-base group-hover:text-blue-600 transition">{team.name}</h3>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">Kuruluş: {team.foundationYear}</span>
+                    <span className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md font-bold">Güç: {team.strength}</span>
                   </div>
-                  <p className="text-xs text-slate-400 mt-1">🎨 Renkler: {team.colors}</p>
+                  <p className="text-xs text-slate-400 mt-1">🎨: {team.colors}</p>
                 </div>
               </div>
 

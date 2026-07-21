@@ -33,7 +33,7 @@ namespace LeagueSim.Api.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     FoundationYear = table.Column<int>(type: "INTEGER", nullable: false),
                     Colors = table.Column<string>(type: "TEXT", nullable: false),
-                    LogoUrl = table.Column<string>(type: "TEXT", nullable: true),
+                    Logo = table.Column<string>(type: "TEXT", nullable: true),
                     Strength = table.Column<int>(type: "INTEGER", nullable: false),
                     Morale = table.Column<int>(type: "INTEGER", nullable: false)
                 },
@@ -49,8 +49,7 @@ namespace LeagueSim.Api.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     WeekNumber = table.Column<int>(type: "INTEGER", nullable: false),
-                    LeaueId = table.Column<int>(type: "INTEGER", nullable: false),
-                    LeagueId = table.Column<int>(type: "INTEGER", nullable: true),
+                    LeagueId = table.Column<int>(type: "INTEGER", nullable: false),
                     IsPlayed = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -60,11 +59,12 @@ namespace LeagueSim.Api.Migrations
                         name: "FK_Weeks_Leagues_LeagueId",
                         column: x => x.LeagueId,
                         principalTable: "Leagues",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Matchs",
+                name: "Matches",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -78,21 +78,21 @@ namespace LeagueSim.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Matchs", x => x.Id);
+                    table.PrimaryKey("PK_Matches", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Matchs_Teams_AwayTeamId",
+                        name: "FK_Matches_Teams_AwayTeamId",
                         column: x => x.AwayTeamId,
                         principalTable: "Teams",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Matchs_Teams_HomeTeamId",
+                        name: "FK_Matches_Teams_HomeTeamId",
                         column: x => x.HomeTeamId,
                         principalTable: "Teams",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Matchs_Weeks_WeekId",
+                        name: "FK_Matches_Weeks_WeekId",
                         column: x => x.WeekId,
                         principalTable: "Weeks",
                         principalColumn: "Id",
@@ -100,18 +100,18 @@ namespace LeagueSim.Api.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matchs_AwayTeamId",
-                table: "Matchs",
+                name: "IX_Matches_AwayTeamId",
+                table: "Matches",
                 column: "AwayTeamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matchs_HomeTeamId",
-                table: "Matchs",
+                name: "IX_Matches_HomeTeamId",
+                table: "Matches",
                 column: "HomeTeamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matchs_WeekId",
-                table: "Matchs",
+                name: "IX_Matches_WeekId",
+                table: "Matches",
                 column: "WeekId");
 
             migrationBuilder.CreateIndex(
@@ -124,7 +124,7 @@ namespace LeagueSim.Api.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Matchs");
+                name: "Matches");
 
             migrationBuilder.DropTable(
                 name: "Teams");

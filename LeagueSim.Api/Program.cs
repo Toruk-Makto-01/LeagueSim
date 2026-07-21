@@ -76,6 +76,8 @@ app.UseCors("AllowAll"); // CORS middleware should be placed before UseAuthoriza
 
 app.UseAuthorization();
 
+app.UseStaticFiles(); // wwwroot klasörünü tarayıcıya açar (app.UseRouting() veya app.MapControllers() un önüne ekleyin)
+
 app.MapControllers();
 
 app.Run();

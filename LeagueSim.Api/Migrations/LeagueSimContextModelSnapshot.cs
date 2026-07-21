@@ -15,12 +15,15 @@ namespace LeagueSim.Api.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.9");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
 
             modelBuilder.Entity("LeagueSim.Api.Models.League", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsCompleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -38,25 +41,29 @@ namespace LeagueSim.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AwayTeamId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("HomeTeamId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int?>("AwayScore")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AwayTeamId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int?>("HomeScore")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("WeekId")
+                    b.Property<int>("HomeTeamId")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsPlayed")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("WeekId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("AwayTeamId");
+
+                    b.HasIndex("HomeTeamId");
 
                     b.HasIndex("WeekId");
 
@@ -69,7 +76,17 @@ namespace LeagueSim.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Colors")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("FoundationYear")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Logo")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Morale")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -78,16 +95,6 @@ namespace LeagueSim.Api.Migrations
 
                     b.Property<int>("Strength")
                         .HasColumnType("INTEGER");
-
-                    b.Property<int>("Morale")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Colors")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("LogoUrl")
-                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -100,13 +107,13 @@ namespace LeagueSim.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("IsPlayed")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("LeagueId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("WeekNumber")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsPlayed")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -118,35 +125,50 @@ namespace LeagueSim.Api.Migrations
 
             modelBuilder.Entity("LeagueSim.Api.Models.Match", b =>
                 {
-                    b.HasOne("LeagueSim.Api.Models.Week", null)
-                        .WithMany("Matches")
-                        .HasForeignKey("WeekId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("LeagueSim.Api.Models.Week", b =>
-                {
-                    b.HasOne("LeagueSim.Api.Models.League", null)
-                        .WithMany()
-                        .HasForeignKey("LeagueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("LeagueSim.Api.Models.Match", b =>
-                {
-                    b.HasOne("LeagueSim.Api.Models.Team", null)
+                    b.HasOne("LeagueSim.Api.Models.Team", "AwayTeam")
                         .WithMany()
                         .HasForeignKey("AwayTeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LeagueSim.Api.Models.Team", null)
+                    b.HasOne("LeagueSim.Api.Models.Team", "HomeTeam")
                         .WithMany()
                         .HasForeignKey("HomeTeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("LeagueSim.Api.Models.Week", "Week")
+                        .WithMany("Matches")
+                        .HasForeignKey("WeekId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AwayTeam");
+
+                    b.Navigation("HomeTeam");
+
+                    b.Navigation("Week");
+                });
+
+            modelBuilder.Entity("LeagueSim.Api.Models.Week", b =>
+                {
+                    b.HasOne("LeagueSim.Api.Models.League", "League")
+                        .WithMany("Weeks")
+                        .HasForeignKey("LeagueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("League");
+                });
+
+            modelBuilder.Entity("LeagueSim.Api.Models.League", b =>
+                {
+                    b.Navigation("Weeks");
+                });
+
+            modelBuilder.Entity("LeagueSim.Api.Models.Week", b =>
+                {
+                    b.Navigation("Matches");
                 });
 #pragma warning restore 612, 618
         }

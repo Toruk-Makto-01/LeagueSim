@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LeagueSim.Api.Migrations
 {
     [DbContext(typeof(LeagueSimContext))]
-    [Migration("20260630115640_InitialCreate")]
+    [Migration("20260721144616_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -70,7 +70,7 @@ namespace LeagueSim.Api.Migrations
 
                     b.HasIndex("WeekId");
 
-                    b.ToTable("Matchs");
+                    b.ToTable("Matches");
                 });
 
             modelBuilder.Entity("LeagueSim.Api.Models.Team", b =>
@@ -86,7 +86,7 @@ namespace LeagueSim.Api.Migrations
                     b.Property<int>("FoundationYear")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("LogoUrl")
+                    b.Property<string>("Logo")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Morale")
@@ -113,10 +113,7 @@ namespace LeagueSim.Api.Migrations
                     b.Property<bool>("IsPlayed")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("LeagueId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("LeaueId")
+                    b.Property<int>("LeagueId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("WeekNumber")
@@ -160,7 +157,9 @@ namespace LeagueSim.Api.Migrations
                 {
                     b.HasOne("LeagueSim.Api.Models.League", "League")
                         .WithMany("Weeks")
-                        .HasForeignKey("LeagueId");
+                        .HasForeignKey("LeagueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("League");
                 });

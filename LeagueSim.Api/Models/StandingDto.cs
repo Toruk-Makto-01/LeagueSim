@@ -4,7 +4,7 @@
     {
         public int TeamId { get; set; }
         public required string TeamName { get; set; } // 'required'
-        public string? LogoUrl { get; set; } // UI tarafında logo göstermek için 
+        public string? Logo { get; set; } // UI tarafında logo göstermek için 
         public int Played { get; set; }       // Oynanan Maç (O)
         public int Won { get; set; }          // Galibiyet (G)
         public int Drawn { get; set; }        // Beraberlik (B)

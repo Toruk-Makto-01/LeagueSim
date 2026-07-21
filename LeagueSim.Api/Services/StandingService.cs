@@ -55,7 +55,7 @@ namespace LeagueSim.Api.Services
                 {
                     TeamId = team.Id,
                     TeamName = team.Name,
-                    LogoUrl = team.LogoUrl,
+                    Logo = team.Logo ?? string.Empty, //Null gelme ihtimaline karşı string.Empt
                     Played = played,
                     Won = won,
                     Drawn = drawn,
