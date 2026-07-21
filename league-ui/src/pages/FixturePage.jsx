@@ -1,108 +1,156 @@
 import React, { useState, useEffect } from 'react';
 
 export default function FixturePage() {
-  const [leagues, setLeagues] = useState([]);
-  const [selectedLeagueId, setSelectedLeagueId] = useState(null);
+  const [leagueData, setLeagueData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Sayfa açıldığında sistemdeki ligleri çekelim ki ID'sini bilelim
   useEffect(() => {
-    fetchLeagues();
+    fetchFixture();
   }, []);
 
-  const fetchLeagues = () => {
-    fetch('https://localhost:7230/api/League')
+  const fetchFixture = () => {
+    fetch('https://localhost:7230/api/League/1')
       .then(res => res.json())
-      .then(data => {
-        setLeagues(data);
-        if (data.length > 0) {
-          const leagueId = data[0].id || data[0].Id;
-          setSelectedLeagueId(leagueId);
-        }
-      })
-      .catch(err => console.error("Ligler çekilemedi:", err));
+      .then(data => setLeagueData(data))
+      .catch(err => console.error("Fikstür çekilemedi:", err));
   };
 
-  // 1. Fikstür Üret
   const handleGenerateFixture = () => {
-    if (!selectedLeagueId) {
-      alert("Önce aktif bir lig bulunamadı!");
-      return;
-    }
-
     setLoading(true);
-    fetch(`https://localhost:7230/api/Fixture/${selectedLeagueId}`, {
+    fetch('https://localhost:7230/api/Fixture/1', {
       method: 'POST'
     })
       .then(res => {
         if (res.ok) {
-          alert('Fikstür başarıyla oluşturuldu! ⚽');
+          alert('Çift devreli lig fikstürü başarıyla oluşturuldu! ⚽');
+          fetchFixture();
         } else {
-          alert('Fikstür oluşturulurken hata oluştu.');
+          alert('Fikstür oluşturulamadı. Takım sayısının en az 18 olduğundan emin olun.');
         }
       })
       .catch(err => console.error("Hata:", err))
       .finally(() => setLoading(false));
   };
 
-  // 2. Tüm Sezonu Oynat (SimulationController -> play-season/{leagueId})
+  const handlePlayWeek = (weekId) => {
+    setLoading(true);
+    fetch(`https://localhost:7230/api/Simulation/${weekId}`, {
+      method: 'POST'
+    })
+      .then(res => {
+        if (res.ok) {
+          fetchFixture();
+        } else {
+          alert('Hafta oynatılırken hata oluştu.');
+        }
+      })
+      .catch(err => console.error("Simülasyon hatası:", err))
+      .finally(() => setLoading(false));
+  };
+
   const handlePlaySeason = () => {
-    if (!selectedLeagueId) return;
-    if (!window.confirm("Tüm sezonu tek seferde simüle etmek istediğinize emin misiniz?")) return;
+    if (!window.confirm("Tüm sezonu tek seferde oynamak istediğinize emin misiniz?")) return;
 
     setLoading(true);
-    fetch(`https://localhost:7230/api/Simulation/play-season/${selectedLeagueId}`, {
+    fetch('https://localhost:7230/api/Simulation/play-season/1', {
       method: 'POST'
     })
       .then(res => {
         if (res.ok) {
-          alert('Sezon başarıyla oynatıldı ve şampiyon belirlendi! 🏆 Puan durumundan kontrol edebilirsin.');
+          alert('Sezon tamamlandı! Şampiyonu puan durumundan kontrol edebilirsin 🏆');
+          fetchFixture();
         } else {
-          alert('Sezon oynatılırken bir hata oluştu.');
+          alert('Sezon simülasyonunda hata oluştu.');
         }
       })
-      .catch(err => console.error("Hata:", err))
+      .catch(err => console.error("Sezon hatası:", err))
       .finally(() => setLoading(false));
   };
+
+  const hasWeeks = leagueData && leagueData.weeks && leagueData.weeks.length > 0;
+  
+  // Tüm haftaların oynanıp oynanmadığını kontrol ediyoruz
+  const allWeeksPlayed = hasWeeks && leagueData.weeks.every(week => week.isPlayed);
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-6">
+    <div className="p-8 max-w-7xl mx-auto">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">📅 Fikstür & Simülasyon</h1>
-          <p className="text-gray-500 text-sm mt-1">Lig takvimini oluştur ve sezonu simüle et.</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">📅 Fikstür & Simülasyon</h1>
+          <p className="text-slate-500 text-sm mt-1">Çift devreli maç takvimini yönet ve haftaları simüle et.</p>
+        </div>
+
+        <div className="flex gap-3">
+          {(!hasWeeks || allWeeksPlayed) ? (
+            <button 
+              onClick={handleGenerateFixture}
+              disabled={loading}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-6 rounded-xl shadow-md transition text-sm"
+            >
+              {loading ? 'Oluşturuluyor...' : '🚀 Fikstür Üret (Çift Devreli)'}
+            </button>
+          ) : (
+            <button 
+              onClick={handlePlaySeason}
+              disabled={loading}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-6 rounded-xl shadow-md transition text-sm"
+            >
+              {loading ? 'Oynatılıyor...' : '🏆 Tüm Sezonu Oynat'}
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Fikstür Üretme Kartı */}
-        <div className="bg-white border rounded-2xl p-8 shadow-sm flex flex-col items-center text-center">
-          <div className="text-4xl mb-3">📋</div>
-          <h2 className="text-xl font-bold text-gray-800 mb-2">Fikstür İşlemleri</h2>
-          <p className="text-gray-500 text-sm mb-6">Takımlar arası eşleşmeleri belirleyerek maç takvimini kurar.</p>
-          <button 
-            onClick={handleGenerateFixture}
-            disabled={loading}
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition"
-          >
-            {loading ? 'İşlem yapılıyor...' : '🚀 Fikstür Üret'}
-          </button>
+      {!hasWeeks ? (
+        <div className="bg-white border border-dashed border-slate-300 rounded-2xl p-16 text-center text-slate-400">
+          <span className="text-4xl block mb-2">📋</span>
+          Bu lig için henüz fikstür oluşturulmamış. Takımları tamamladıktan sonra yukarıdaki butona basarak fikstürü kurabilirsiniz.
         </div>
+      ) : (
+        <div className="space-y-6">
+          {leagueData.weeks.map((week) => (
+            <div key={week.id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <div className="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+                <h3 className="text-lg font-bold text-slate-800">Hafta {week.weekNumber}</h3>
+                
+                <div className="flex items-center gap-3">
+                  <span className={`text-xs px-3 py-1 rounded-full font-semibold ${week.isPlayed ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                    {week.isPlayed ? 'Oynandı ✓' : 'Oynanmadı'}
+                  </span>
 
-        {/* Sezon Simülasyon Kartı */}
-        <div className="bg-white border rounded-2xl p-8 shadow-sm flex flex-col items-center text-center">
-          <div className="text-4xl mb-3">⚡</div>
-          <h2 className="text-xl font-bold text-gray-800 mb-2">Sezon Simülasyonu</h2>
-          <p className="text-gray-500 text-sm mb-6">Tüm maçları tek tuşla oynatır ve sezonu tamamlar.</p>
-          <button 
-            onClick={handlePlaySeason}
-            disabled={loading}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition"
-          >
-            {loading ? 'Simülasyon yapılıyor...' : '🏆 Tüm Sezonu Oynat'}
-          </button>
+                  {!week.isPlayed && (
+                    <button 
+                      onClick={() => handlePlayWeek(week.id)}
+                      disabled={loading}
+                      className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 px-4 rounded-lg shadow transition"
+                    >
+                      {loading ? 'Oynatılıyor...' : '⚡ Bu Haftayı Oynat'}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {week.matches.map((match) => (
+                  <div key={match.id} className="bg-slate-50 border border-slate-100 p-3 rounded-xl flex items-center justify-between text-sm">
+                    <span className="font-semibold text-slate-700 truncate w-2/5 text-right">
+                      {match.homeTeamName || `Takım #${match.homeTeamId}`}
+                    </span>
+                    
+                    <div className="px-3 py-1 bg-white border border-slate-200 rounded-lg font-bold text-blue-600 shadow-inner">
+                      {match.isPlayed ? `${match.homeScore} - ${match.awayScore}` : 'vs'}
+                    </div>
+
+                    <span className="font-semibold text-slate-700 truncate w-2/5 text-left">
+                      {match.awayTeamName || `Takım #${match.awayTeamId}`}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
+      )}
     </div>
   );
 }
