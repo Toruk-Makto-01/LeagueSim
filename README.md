@@ -4,12 +4,12 @@ LeagueSim, takımların yönetildiği, otomatik fikstürlerin oluşturulduğu ve
 
 ## 🚀 Özellikler
 
-- **Takım Yönetimi:** Lige yeni takımlar ekleme, güç ve moral değerlerini belirleme.
+- **Takım Yönetimi:** Lige yeni takımlar ekleme, güç değerlerini belirleme.
 - **Dinamik Fikstür Üretimi:** Takım sayısına göre çift devreli (Rövanşlı) lig fikstürünü otomatik oluşturma.
 - **Adil Simülasyon:** Her sezon veya yeni fikstür başlangıcında takımların moral değerlerinin sıfırlanması.
 - **Maç Motoru:** Maçların oynanması, skorların belirlenmesi ve sonuçların kaydedilmesi.
 - **Canlı Puan Durumu:** Oynanan maçlara göre (Puan > Averaj > Atılan Gol) sıralanan dinamik puan tablosu.
-- **Şampiyonluk Kutlaması:** 34 haftalık tüm maçlar tamamlandığında lider takımın logosuyla birlikte şampiyon ilan edilmesi.
+- **Şampiyonluk Kutlaması:** Tüm maçlar tamamlandığında lider takımın logosuyla birlikte şampiyon ilan edilmesi.
 
 ## 💻 Kullanılan Teknolojiler
 
