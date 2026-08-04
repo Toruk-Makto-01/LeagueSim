@@ -31,6 +31,14 @@ namespace LeagueSim.Api.Controllers
                 _context.SaveChanges();
             }
 
+            // 0. Yeni fikstür oluşturulurken tüm takımların moral değerlerini 50'ye sıfırlıyoruz
+            var allTeams = _teamRepository.GetAll().ToList();
+            foreach (var team in allTeams)
+            {
+                team.Morale = 50; // Moral değerini başlangıç seviyesine getiriyoruz
+                _teamRepository.Update(team);
+            }
+
             // 1. Eski hafta ve maçları temizleme (Artık üst üste binme olmayacak)
             var existingWeeks = _context.Weeks.Where(w => w.LeagueId == leagueId).ToList();
             if (existingWeeks.Any())
