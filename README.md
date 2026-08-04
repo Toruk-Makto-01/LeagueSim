@@ -1,3 +1,4 @@
+
 # 🏆 LeagueSim - Futbol Lig Simülasyonu
 
 LeagueSim, takımların yönetildiği, otomatik fikstürlerin oluşturulduğu ve maç sonuçlarının dinamik olarak simüle edilerek puan durumunun hesaplandığı tam yığın (full-stack) bir web uygulamasıdır. 
@@ -25,7 +26,7 @@ LeagueSim, takımların yönetildiği, otomatik fikstürlerin oluşturulduğu ve
 ## 📸 Ekran Görüntüleri
 
 *(Buraya projenin çalıştığı anlardan 2-3 ekran görüntüsü ekleyebilirsin)*
-![Takımlar](1.png)
+![Takımlar](1.png)<img width="1906" height="912" alt="1" src="https://github.com/user-attachments/assets/f132333f-16e7-41e6-a015-e47b117e16e1" />
 ![Haftalar](2.png)
 ![Puan Durumu](3.png)
 
