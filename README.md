@@ -25,9 +25,9 @@ LeagueSim, takımların yönetildiği, otomatik fikstürlerin oluşturulduğu ve
 ## 📸 Ekran Görüntüleri
 
 *(Buraya projenin çalıştığı anlardan 2-3 ekran görüntüsü ekleyebilirsin)*
-![Takımlar](1.png)
-![Haftalar](2.png)
-![Puan Durumu](3.png)
+![Takımlar](league-ui/public/images/1.png)
+![Haftalar](league-ui/public/images/2.png)
+![Puan Durumu](league-ui/public/images/3.png)
 
 ## 🛠️ Kurulum ve Çalıştırma
 
