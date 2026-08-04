@@ -28,6 +28,8 @@ namespace LeagueSim.Api.Repositories
             return _context.Matches
                 .Include(m => m.Week)
                 .ThenInclude(w => w.League)
+                .Include(m => m.HomeTeam) // <-- Ev sahibi takım nesnesini dahil et
+                .Include(m => m.AwayTeam) // <-- Deplasman takım nesnesini dahil et
                 .ToList();
         }
         public void Update(Match match)

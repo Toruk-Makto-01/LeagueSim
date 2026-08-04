@@ -68,7 +68,7 @@ export default function FixturePage() {
   };
 
   const hasWeeks = leagueData && leagueData.weeks && leagueData.weeks.length > 0;
-  
+
   // Tüm haftaların oynanıp oynanmadığını kontrol ediyoruz
   const allWeeksPlayed = hasWeeks && leagueData.weeks.every(week => week.isPlayed);
 
@@ -82,7 +82,7 @@ export default function FixturePage() {
 
         <div className="flex gap-3">
           {(!hasWeeks || allWeeksPlayed) ? (
-            <button 
+            <button
               onClick={handleGenerateFixture}
               disabled={loading}
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-6 rounded-xl shadow-md transition text-sm"
@@ -90,7 +90,7 @@ export default function FixturePage() {
               {loading ? 'Oluşturuluyor...' : '🚀 Fikstür Üret (Çift Devreli)'}
             </button>
           ) : (
-            <button 
+            <button
               onClick={handlePlaySeason}
               disabled={loading}
               className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-6 rounded-xl shadow-md transition text-sm"
@@ -112,14 +112,14 @@ export default function FixturePage() {
             <div key={week.id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
               <div className="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
                 <h3 className="text-lg font-bold text-slate-800">Hafta {week.weekNumber}</h3>
-                
+
                 <div className="flex items-center gap-3">
                   <span className={`text-xs px-3 py-1 rounded-full font-semibold ${week.isPlayed ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
                     {week.isPlayed ? 'Oynandı ✓' : 'Oynanmadı'}
                   </span>
 
                   {!week.isPlayed && (
-                    <button 
+                    <button
                       onClick={() => handlePlayWeek(week.id)}
                       disabled={loading}
                       className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 px-4 rounded-lg shadow transition"
@@ -130,19 +130,22 @@ export default function FixturePage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {week.matches.map((match) => (
-                  <div key={match.id} className="bg-slate-50 border border-slate-100 p-3 rounded-xl flex items-center justify-between text-sm">
-                    <span className="font-semibold text-slate-700 truncate w-2/5 text-right">
-                      {match.homeTeamName || `Takım #${match.homeTeamId}`}
+                  <div key={match.id} className="bg-slate-50 border border-slate-100 p-3.5 rounded-xl flex items-center justify-between text-sm gap-2">
+                    {/* Ev Sahibi Takım Adı */}
+                    <span className="font-semibold text-slate-700 truncate flex-1 text-right">
+                      {match.homeTeam?.name || match.HomeTeam?.name || match.homeTeamName || `Takım #${match.homeTeamId}`}
                     </span>
-                    
-                    <div className="px-3 py-1 bg-white border border-slate-200 rounded-lg font-bold text-blue-600 shadow-inner">
+
+                    {/* Skor Kutusu */}
+                    <div className="px-3 py-1 bg-white border border-slate-200 rounded-lg font-bold text-blue-600 shadow-inner shrink-0 text-center min-w-[55px]">
                       {match.isPlayed ? `${match.homeScore} - ${match.awayScore}` : 'vs'}
                     </div>
 
-                    <span className="font-semibold text-slate-700 truncate w-2/5 text-left">
-                      {match.awayTeamName || `Takım #${match.awayTeamId}`}
+                    {/* Deplasman Takım Adı */}
+                    <span className="font-semibold text-slate-700 truncate flex-1 text-left">
+                      {match.awayTeam?.name || match.AwayTeam?.name || match.awayTeamName || `Takım #${match.awayTeamId}`}
                     </span>
                   </div>
                 ))}

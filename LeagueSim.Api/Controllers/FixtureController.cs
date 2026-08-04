@@ -23,6 +23,14 @@ namespace LeagueSim.Api.Controllers
         [HttpPost("{leagueId}")]
         public IActionResult GenerateFixture(int leagueId)
         {
+            // Lig veritabanında yoksa otomatik oluştur (Foreign Key hatasını önler)
+            var league = _context.Leagues.Find(leagueId);
+            if (league == null)
+            {
+                _context.Leagues.Add(new League { Id = leagueId, Name = "Süper Lig" });
+                _context.SaveChanges();
+            }
+
             // 1. Eski hafta ve maçları temizleme (Artık üst üste binme olmayacak)
             var existingWeeks = _context.Weeks.Where(w => w.LeagueId == leagueId).ToList();
             if (existingWeeks.Any())
@@ -36,8 +44,8 @@ namespace LeagueSim.Api.Controllers
                 _context.SaveChanges();
             }
 
-            // 2. Takım sayısı kontrolü (En az 18 takım kuralı)
-            var teams = _teamRepository.GetAll().ToList();
+            // Takımları çekip rastgele karıştırıyoruz ki her seferinde farklı fikstür çıksın
+            var teams = _teamRepository.GetAll().OrderBy(t => Guid.NewGuid()).ToList();
             if (teams.Count < 18)
             {
                 return BadRequest("Fikstür oluşturmak için en az 18 takım olmalıdır.");

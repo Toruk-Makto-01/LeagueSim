@@ -15,7 +15,11 @@ namespace LeagueSim.Api.Repositories
         public List<League> GetAll() => _context.Leagues.ToList();
         public League? GetById(int id) => _context.Leagues
             .Include(l => l.Weeks)
-            .ThenInclude(w => w.Matches)
+                .ThenInclude(w => w.Matches)
+                    .ThenInclude(m => m.HomeTeam) // <-- Ev sahibi takımın adını dahil eder
+            .Include(l => l.Weeks)
+                .ThenInclude(w => w.Matches)
+                    .ThenInclude(m => m.AwayTeam) // <-- Deplasman takımın adını dahil eder
             .FirstOrDefault(l => l.Id == id);
         public void Add(League league)
         {
