@@ -1,4 +1,8 @@
+Uyarın için teşekkür ederim! Klasör ve proje isimlerini belirttiğin yapıya göre (`LeagueSim.Api` kök klasörü, altında `LeagueSim.Api` backend ve `league-ui` frontend) tamamen güncelledim.
 
+İşte projenin doğru dizin yapısına göre düzenlenmiş **`README.md`** dosyası:
+
+---
 
 # ⚽ Futbol Ligi Yönetim ve Simülasyon Sistemi (PoC)
 
@@ -25,14 +29,14 @@ Kullanıcılar takımları yönetebilir, otomatik olarak çift devreli lig fikst
 
 ## 🛠️ Kullanılan Teknolojiler
 
-### Backend
+### Backend (`LeagueSim.Api`)
 
 * **Dil & Framework:** C# / .NET 8.0 ASP.NET Core Web API
 * **ORM:** Entity Framework Core 8.0
 * **Veritabanı:** SQLite (Dosya tabanlı, taşınabilir DB)
 * **Mimari Pattern:** Katmanlı Mimari (Controller -> Service -> Repository -> Entity/Model), Dependency Injection, CORS Yönetimi
 
-### Frontend
+### Frontend (`league-ui`)
 
 * **Kütüphane & Araçlar:** React 18, Vite
 * **Stil:** Tailwind CSS, Lucide React (İkon Seti)
@@ -44,8 +48,8 @@ Kullanıcılar takımları yönetebilir, otomatik olarak çift devreli lig fikst
 ## 📁 Proje Klasör Yapısı
 
 ```text
-football-league-simulation/
-├── FootballLeague.Api/                # Backend (C# .NET Core Web API)
+LeagueSim.Api/                         # Ana Proje Kök Klasörü
+├── LeagueSim.Api/                     # Backend (C# .NET Core Web API)
 │   ├── Controllers/                   # API Uç Noktaları (Team, Fixture, Simulation, Standing)
 │   ├── Services/                      # İş Mantığı & Simülasyon Algoritmaları
 │   ├── Repositories/                  # Veri Erişim Katmanı (Repository Pattern)
@@ -54,7 +58,7 @@ football-league-simulation/
 │   ├── wwwroot/                       # Logo ve Statik Dosya Deposu
 │   └── Program.cs                     # DI Kayıtları ve Pipeline Ayarları
 │
-└── football-league-ui/                # Frontend (React + Vite)
+└── league-ui/                         # Frontend (React + Vite)
     ├── src/
     │   ├── components/                # Sidebar, Modal, Confetti vb. Bileşenler
     │   ├── pages/                     # Teams, Fixture, Standings Sayfaları
@@ -78,12 +82,12 @@ Projeyi yerel ortamınızda çalıştırmak için aşağıdaki adımları sıras
 
 ---
 
-### 1. Backend (C# Web API) Çalıştırma
+### 1. Backend (`LeagueSim.Api`) Çalıştırma
 
 ```bash
 # Projeyi klonlayın
-git clone https://github.com/kullaniciadi/football-league-simulation.git
-cd football-league-simulation/FootballLeague.Api
+git clone https://github.com/kullaniciadi/LeagueSim.Api.git
+cd LeagueSim.Api/LeagueSim.Api
 
 # Bağımlılıkları yükleyin
 dotnet restore
@@ -101,13 +105,13 @@ dotnet run
 
 ---
 
-### 2. Frontend (React + Vite) Çalıştırma
+### 2. Frontend (`league-ui`) Çalıştırma
 
 Yeni bir terminal penceresi açın:
 
 ```bash
 # Frontend dizinine geçin
-cd football-league-simulation/football-league-ui
+cd LeagueSim.Api/league-ui
 
 # Node paketlerini yükleyin
 npm install
